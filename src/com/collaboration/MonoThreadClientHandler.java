@@ -13,7 +13,7 @@ public class MonoThreadClientHandler implements Runnable {
 	private static DataOutputStream outStream;
 
 
-	MonoThreadClientHandler(Socket client) {
+	public MonoThreadClientHandler(Socket client) {
 		MonoThreadClientHandler.clientDialog = client;
 	}
 
@@ -47,7 +47,7 @@ public class MonoThreadClientHandler implements Runnable {
 
 					case "search":
 						search(entry);
-						
+
 				}
 
 				if (entry.equalsIgnoreCase("quit")) {
@@ -103,7 +103,7 @@ public class MonoThreadClientHandler implements Runnable {
 	/**
 	 * check data and if true create project in sql
 	 */
-	private static void createProject(String json){
+	public static void createProject(String json){
 		// TODO: 12.03.2018
 	}
 
