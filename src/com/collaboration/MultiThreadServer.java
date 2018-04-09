@@ -26,7 +26,8 @@ public class MultiThreadServer {
 
 
 		try (ServerSocket server = new ServerSocket(15233)) {
-			System.out.println("Server socket created, command console reader for listen to server commands");
+		    server.setSoTimeout(5);
+			System.out.println("Server socket created, command console reader for listen to Server commands");
 
 			Driver driver ;
 
@@ -36,8 +37,9 @@ public class MultiThreadServer {
 
 				Socket client = server.accept();
 
-				executeIt.execute(new MonoThreadClientHandler(client));	//main code server
-				System.out.print("Connection accepted.");
+				executeIt.execute(new MonoThreadClientHandler(client));	//main code Server
+
+				System.out.println("Connection accepted.");
 			}
 
 			executeIt.shutdown();

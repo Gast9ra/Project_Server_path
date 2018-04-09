@@ -2,6 +2,7 @@ package com.collaboration;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -32,11 +33,15 @@ public class MonoThreadClientHandler implements Runnable {
 			if (!authentication(inStream.readUTF())) clientDialog.close(); //check data need json
 
 			while (!clientDialog.isClosed()) {
-				String entry = inStream.readUTF();
+				String entry="";
+				System.out.println(clientDialog.isInputShutdown());
+				inStream.readUTF();
+			//	String entry = inStream.readUTF();
 
 
 				switch (entry){
 					case "create":
+						System.out.print("create");
 						createProject(entry);   // put json request
 
 					case "join":
@@ -76,7 +81,11 @@ public class MonoThreadClientHandler implements Runnable {
 
 			clientDialog.close();
 
-		} catch (IOException | InterruptedException e) {
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -91,6 +100,7 @@ public class MonoThreadClientHandler implements Runnable {
 		try {
 			outStream.writeUTF("true");
 			outStream.flush();
+			System.out.println("go");
 			// TODO: 12.03.2018
 		} catch (IOException e) {
 			e.printStackTrace();
