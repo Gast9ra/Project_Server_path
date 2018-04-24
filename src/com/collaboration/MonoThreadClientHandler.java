@@ -2,13 +2,12 @@ package com.collaboration;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class MonoThreadClientHandler implements Runnable {
 
 	private static Socket clientDialog;
 
-	//private static DataInputStream inStream;
-	//private static DataOutputStream outStream;
 	private static PrintWriter outStream;
 	private static BufferedReader inStream;
 
@@ -25,63 +24,62 @@ public class MonoThreadClientHandler implements Runnable {
 
 		try {
 
-			inStream = new BufferedReader(new InputStreamReader(clientDialog.getInputStream()));
-			outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
-                    ,true);
+            inStream = new BufferedReader(new InputStreamReader(clientDialog.getInputStream()));
+            outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
+                    , true);
 
-			if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
+            if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
 
-			while (!clientDialog.isClosed()) {
-				String entry="";
-				System.out.println(clientDialog.isInputShutdown());
-				inStream.readLine();
-			//	String entry = inStream.readUTF();
+            while (!clientDialog.isClosed()) {
+                String entry;
 
+                entry = inStream.readLine();
 
-				switch (entry){
-					case "create":
-						System.out.print("create");
-						createProject(entry);   // put json request
+                System.out.println(entry);
 
-					case "join":
-						joinProject(entry);   // put json request
+                switch (entry) {
+                    case "create":
+                        System.out.print("create");
+                        createProject(entry);   // put json request
 
-					case "need List project":
-						listProject(entry); // put json request
+                    case "join":
+                        joinProject(entry);   // put json request
 
-					case "search":
-						search(entry);
+                    case "need List project":
+                        listProject(entry); // put json request
 
-				}
+                    case "search":
+                        search(entry);
 
-				if (entry.equalsIgnoreCase("quit")) {
-					System.out.println("Client suicide");
-					outStream.println("Server reply - " + entry + " - OK");
-					Thread.sleep(3000);
-					break;
-				}
+                }
 
-
+                if (entry.equalsIgnoreCase("quit")) {
+                    System.out.println("Client suicide");
+                    outStream.println("Server reply - " + entry + " - OK");
+                    Thread.sleep(3000);
+                    break;
+                }
 
 
-				System.out.println("Server try writing to channel");
-				outStream.println("Server reply - " + entry + " - OK");
-				System.out.println("Server Wrote message to clientDialog.");
+                System.out.println("Server try writing to channel");
+                outStream.println("Server reply - " + entry + " - OK");
+                System.out.println("Server Wrote message to clientDialog.");
 
 
-				outStream.flush();
+                outStream.flush();
 
 
-			}
+            }
 
 
-			inStream.close();
-			outStream.close();
+            inStream.close();
+            outStream.close();
 
-			clientDialog.close();
+            clientDialog.close();
 
 
-
+        } catch (SocketException e) {
+            System.out.println("Client lost connecting");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
