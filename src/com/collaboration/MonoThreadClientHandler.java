@@ -1,18 +1,16 @@
 package com.collaboration;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class MonoThreadClientHandler implements Runnable {
 
 	private static Socket clientDialog;
 
-	private static DataInputStream inStream;
-	private static DataOutputStream outStream;
-
+	//private static DataInputStream inStream;
+	//private static DataOutputStream outStream;
+	private static PrintWriter outStream;
+	private static BufferedReader inStream;
 
 	public MonoThreadClientHandler(Socket client) {
 		MonoThreadClientHandler.clientDialog = client;
@@ -27,15 +25,16 @@ public class MonoThreadClientHandler implements Runnable {
 
 		try {
 
-			inStream = new DataInputStream(clientDialog.getInputStream());
-			outStream = new DataOutputStream(clientDialog.getOutputStream());
+			inStream = new BufferedReader(new InputStreamReader(clientDialog.getInputStream()));
+			outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
+                    ,true);
 
-			if (!authentication(inStream.readUTF())) clientDialog.close(); //check data need json
+			if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
 
 			while (!clientDialog.isClosed()) {
 				String entry="";
 				System.out.println(clientDialog.isInputShutdown());
-				inStream.readUTF();
+				inStream.readLine();
 			//	String entry = inStream.readUTF();
 
 
@@ -57,7 +56,7 @@ public class MonoThreadClientHandler implements Runnable {
 
 				if (entry.equalsIgnoreCase("quit")) {
 					System.out.println("Client suicide");
-					outStream.writeUTF("Server reply - " + entry + " - OK");
+					outStream.println("Server reply - " + entry + " - OK");
 					Thread.sleep(3000);
 					break;
 				}
@@ -66,7 +65,7 @@ public class MonoThreadClientHandler implements Runnable {
 
 
 				System.out.println("Server try writing to channel");
-				outStream.writeUTF("Server reply - " + entry + " - OK");
+				outStream.println("Server reply - " + entry + " - OK");
 				System.out.println("Server Wrote message to clientDialog.");
 
 
@@ -97,15 +96,11 @@ public class MonoThreadClientHandler implements Runnable {
 	 	* request to user need register or not
 	 */
 	private static boolean authentication(String login){
-		try {
-			outStream.writeUTF("true");
-			outStream.flush();
-			System.out.println("go");
-			// TODO: 12.03.2018
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return true;
+        outStream.println("true");
+        outStream.flush();
+        System.out.println("go");
+        // TODO: 12.03.2018
+        return true;
 	}
 
 

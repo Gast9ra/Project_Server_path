@@ -1,7 +1,9 @@
 import com.collaboration.*;
 import com.collaboration.Trash.Client;
 import com.collaboration.Trash.Server;
+import com.sun.org.apache.bcel.internal.classfile.Constant;
 import org.junit.jupiter.api.Test;
+import sun.security.pkcs11.wrapper.Constants;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,12 +25,14 @@ class Database {
 
     @Test
     void test() throws IOException, InterruptedException {
-//        new MultiThreadServer();
-        ClientForAndroid test=new ClientForAndroid(new Socket("localhost", 15233));
-        System.out.println();
-//        test.run();
-//        test.createProj();
-      //  test.close();
+        Socket socket = new Socket("localhost", 15233);
+        ClientForAndroid client= new ClientForAndroid(socket);
+        Thread.sleep(20);
+        System.out.println(client.isConnected());
+        client.sendMessage("test");
+        client.sendMessage("Client test");
+        System.out.println(client.getmServerMessage());
+
     }
 
 }

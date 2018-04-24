@@ -3,7 +3,7 @@ package com.collaboration;
 import java.io.*;
 import java.net.Socket;
 
-public class ClientForAndroid {
+public class ClientForAndroid implements Runnable {
     private String mServerMessage;
     private boolean mRun = false; // флаг, определяющий, запущен ли сервер
     private PrintWriter mBufferOut;
@@ -11,8 +11,11 @@ public class ClientForAndroid {
     private Socket socket;
     private String address;
 
-    public ClientForAndroid(String address) {
-        this.address = address;
+    public ClientForAndroid(Socket server) {
+        this.socket=server;
+        Thread thread = new Thread(this, "Net");
+        System.out.println("check" + thread);
+        thread.start();
     }
 
     public void sendMessage(String message) {
@@ -37,11 +40,12 @@ public class ClientForAndroid {
         mServerMessage = null;
     }
 
+    @Override
     public void run() {
         try {
-
+            System.out.println("gdsg");
             try {
-                socket = new Socket("locahost", 15233);
+//                socket = new Socket("localhost", 15233);
                 mRun = true;
                 mBufferOut =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),
@@ -55,9 +59,13 @@ public class ClientForAndroid {
                     }
 
                     mServerMessage = mBufferIn.readLine();
+                    if(mServerMessage.equalsIgnoreCase("quit")){
+                       sendMessage("quit");
+                       socket.close();
+                    }
 
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             } finally {
                 if (socket != null && socket.isConnected()) {
                     socket.close();
