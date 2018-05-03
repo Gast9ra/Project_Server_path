@@ -28,7 +28,7 @@ public class MonoThreadClientHandler implements Runnable {
             outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
                     , true);
 
-            if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
+//            if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
 
             while (!clientDialog.isClosed()) {
                 String entry;
@@ -39,7 +39,7 @@ public class MonoThreadClientHandler implements Runnable {
 
                 switch (entry) {
                     case "create":
-                        System.out.print("create");
+                        System.out.println("Accept Create");
                         createProject(entry);   // put json request
 
                     case "join":
@@ -96,7 +96,6 @@ public class MonoThreadClientHandler implements Runnable {
 	private static boolean authentication(String login){
         outStream.println("true");
         outStream.flush();
-        System.out.println("go");
         // TODO: 12.03.2018
         return true;
 	}

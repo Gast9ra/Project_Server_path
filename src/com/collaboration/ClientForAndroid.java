@@ -3,6 +3,12 @@ package com.collaboration;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * добавить wait() для того чтобы не разрывать соединеение с клиентом тогда в каждом методе нужно
+ * добавить notify() ,но надо посмотреть можно ли вызвать для определеного потока
+ */
+
+
 public class ClientForAndroid implements Runnable {
     private String mServerMessage;
     private boolean mRun = false; // флаг, определяющий, запущен ли сервер
@@ -11,21 +17,23 @@ public class ClientForAndroid implements Runnable {
     private Socket socket;
     private String address;
 
-    public ClientForAndroid(Socket server) {
+    public ClientForAndroid(Socket server) throws InterruptedException {
         this.socket=server;
         Thread thread = new Thread(this, "Net");
         System.out.println("check" + thread);
         thread.start();
+        Thread.sleep(20);
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(String message) throws InterruptedException {
         if (mBufferOut != null && !mBufferOut.checkError()) {
             mBufferOut.println(message);
             mBufferOut.flush();
         }
+        Thread.sleep(20);
     }
 
-    public void stopClient() {
+    public void stopClient() throws IOException, InterruptedException {
         sendMessage("Client is close");
 
         mRun = false;
@@ -43,7 +51,7 @@ public class ClientForAndroid implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("gdsg");
+            System.out.println("Connect to server");
             try {
 //                socket = new Socket("localhost", 15233);
                 mRun = true;
@@ -83,7 +91,30 @@ public class ClientForAndroid implements Runnable {
         return mRun;
     }
 
-    public String getmServerMessage() {
+    public String getmServerMessage() throws InterruptedException {
+        Thread.sleep(20);
         return mServerMessage;
+    }
+
+
+
+    //в приложение
+    public void   joinProject(String projct){
+        //todo
+    }
+
+    public String listProject(){
+        String jsonout = null;
+        return jsonout;
+    }
+
+
+    public String search(String json){
+        // TODO: 12.03.2018
+        return json;
+    }
+
+    public static void createProject(String json){
+        // TODO: 12.03.2018
     }
 }
