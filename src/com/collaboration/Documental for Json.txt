@@ -1,0 +1,26 @@
+In database tablet:
+    project
+        Project User ||
+            {
+               "Users":[
+                    "idUser" //id значение int
+               ]
+            }
+        ||
+
+
+    User
+        UserProjectConnect||
+            {
+                "ConnectProj":[
+                    "idUser"
+                ]
+            }
+        ||
+
+Transfer Json:
+    {
+        "JsonMessaged": "type" //тип сообщения на будующие
+        "Command": "com"  //какая команда
+        "data":[]
+    }
