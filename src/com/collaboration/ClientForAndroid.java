@@ -48,6 +48,7 @@ public class ClientForAndroid implements Runnable {
         mServerMessage = null;
     }
 
+
     @Override
     public void run() {
         try {
@@ -99,22 +100,49 @@ public class ClientForAndroid implements Runnable {
 
 
     //в приложение
-    public void   joinProject(String projct){
+
+    /**
+     * получение номера проекта на запрос на присоединении
+     * @param id
+     */
+
+    public void joinProject(int id){
         //todo
     }
 
+
+    /**
+     * получение определеного проекта по id
+     * возращиние конструктора проекта
+     * @param id
+     * @return
+     */
+    public String retProject(int id){
+
+        return "";
+    }
+
+
+    /**
+     * возвращение тоже самое из поиска только без начальных данных
+     */
     public String listProject(){
         String jsonout = null;
         return jsonout;
     }
 
-
-    public String search(String json){
+    /**
+        возвращение листа кострукторов проэктов
+     */
+    public String searchProject(String name){
         // TODO: 12.03.2018
-        return json;
+
+        return name;
     }
 
-    public static void createProject(String json){
+
+
+    public static void createProject(String name,String discript,int numPeople){
         // TODO: 12.03.2018
     }
 }
