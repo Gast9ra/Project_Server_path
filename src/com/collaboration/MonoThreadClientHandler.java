@@ -4,14 +4,20 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class MonoThreadClientHandler implements Runnable {
 
 	private static Socket clientDialog;
+	private static Statement forSqlConnect;
+
 
 	private static PrintWriter outStream;
 	private static BufferedReader inStream;
 
-	public MonoThreadClientHandler(Socket client) {
+	public MonoThreadClientHandler(Socket client, Statement stmt) {
+		MonoThreadClientHandler.forSqlConnect=stmt;
 		MonoThreadClientHandler.clientDialog = client;
 	}
 
@@ -77,12 +83,13 @@ public class MonoThreadClientHandler implements Runnable {
 
             clientDialog.close();
 
-
         } catch (SocketException e) {
             System.out.println("Client lost connecting");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -105,8 +112,21 @@ public class MonoThreadClientHandler implements Runnable {
 	/**
 	 * check data and if true create project in sql
 	 */
-	public static void createProject(String json){
-		// TODO: 12.03.2018
+	public static void createProject(String json) throws SQLException {
+	    //data for the created project
+	    String projectName="";
+	    String projectLeader="";
+	    String projectText="";
+        //put Json parser here
+
+
+        //sql request for create
+		String sqlRequest="INSERT INTO project " +
+                "(ProjectName,ProjectLeader,Projecttext)" +
+                "value ("+projectName+projectLeader+projectText+")";
+		forSqlConnect.executeUpdate(sqlRequest);
+
+
 	}
 
 
