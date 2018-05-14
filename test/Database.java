@@ -8,13 +8,14 @@ import sun.security.pkcs11.wrapper.Constants;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 
 class Database {
 
 
     @Test
-    void create() throws IOException {
+    void create() throws IOException, SQLException {
         //ServerSocket Server=new ServerSocket(13345);
         //Socket client = new Socket("localhost", 13345);
         //MonoThreadClientHandler test= new MonoThreadClientHandler(Server.accept());

@@ -2,6 +2,7 @@ package com.collaboration;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * добавить wait() для того чтобы не разрывать соединеение с клиентом тогда в каждом методе нужно
@@ -134,10 +135,14 @@ public class ClientForAndroid implements Runnable {
     /**
         возвращение листа кострукторов проэктов
      */
-    public String searchProject(String name){
-        // TODO: 12.03.2018
+    public AndroidProjects searchProject(String name){
+        int id=0;
+        int idLeader=0;
+        ArrayList<Users> listUsers=new ArrayList<>();
 
-        return name;
+        AndroidProjects result=new AndroidProjects(id,name,idLeader,listUsers);
+
+        return result;
     }
 
 
