@@ -4,31 +4,29 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class MonoThreadClientHandler implements Runnable {
 
-	private static Socket clientDialog;
-	private static Statement forSqlConnect;
+    private static Socket clientDialog;
+    private static Statement forSqlConnect;
 
 
-	private static PrintWriter outStream;
-	private static BufferedReader inStream;
+    private static PrintWriter outStream;
+    private static BufferedReader inStream;
 
-	public MonoThreadClientHandler(Socket client, Statement stmt) {
-		MonoThreadClientHandler.forSqlConnect=stmt;
-		MonoThreadClientHandler.clientDialog = client;
-	}
-
-
+    public MonoThreadClientHandler(Socket client, Statement stmt) {
+        MonoThreadClientHandler.forSqlConnect = stmt;
+        MonoThreadClientHandler.clientDialog = client;
+    }
 
 
+    @Override
+    public void run() {
 
-	@Override
-	public void run() {
-
-		try {
+        try {
 
             inStream = new BufferedReader(new InputStreamReader(clientDialog.getInputStream()));
             outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
@@ -85,76 +83,86 @@ public class MonoThreadClientHandler implements Runnable {
 
         } catch (SocketException e) {
             System.out.println("Client lost connecting");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
-
-	/**
-		* takes json and send to sql. if user haven't in database send
-	 	* request to user need register or not
-	 */
-	private static boolean authentication(String login){
+    /**
+     * takes json and send to sql. if user haven't in database send
+     * request to user need register or not
+     */
+    private static boolean authentication(String login) {
         outStream.println("true");
         outStream.flush();
         // TODO: 12.03.2018
         return true;
-	}
+    }
 
 
-
-	/**
-	 * check data and if true create project in sql
-	 */
-	public static void createProject(String json) throws SQLException {
-	    //data for the created project
-	    String projectName="";
-	    String projectLeader="";
-	    String projectText="";
+    /**
+     * check data and if true create project in sql
+     */
+    public static void createProject(String json) throws SQLException {
+        //data for the created project
+        String projectName = "";
+        String projectLeader = "";
+        String projectText = "";
         //put Json parser here
 
 
         //sql request for create
-		String sqlRequest="INSERT INTO project " +
+        String sqlRequest = "INSERT INTO project " +
                 "(ProjectName,ProjectLeader,Projecttext)" +
-                "value ("+projectName+projectLeader+projectText+")";
-		forSqlConnect.executeUpdate(sqlRequest);
+                "value (" + projectName + projectLeader + projectText + ")";
+        forSqlConnect.executeUpdate(sqlRequest);
 
 
-	}
+    }
 
 
-
-	/**
-	 * check data and send request to sql for join project
-	 */
-	private static void joinProject(String json){
-		// TODO: 12.03.2018
-	}
-
-	/**
-	 * send to client list all Project
-	 */
-	private static void listProject(String json){
-		// TODO: 12.03.2018
-	}
+    /**
+     * check data and send request to sql for join project
+     * need data id user id project
+     * check data not work now
+     */
+    private static void joinProject(String json) throws SQLException {
+        int idUser = 0;
+        int idProject = 0;
+        String jsonOnSql = null;
+        //json parse here
 
 
-
-	/**
-	 * search in database adn send client
-	 */
-	private static void search(String json){
-		// TODO: 12.03.2018
-	}
+        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectQueue FROM project WHERE idProject=" + idProject);
+        while (rs.next()) {
+            jsonOnSql = rs.getString(1);
+        }
+        //add in jsonOnSql user how want to join and check for repeat
 
 
+        forSqlConnect.executeUpdate("UPDATE project set ProjectQueue="
+                + jsonOnSql + "WHERE idProject=" + idProject);
+    }
+
+    /**
+     * send to client list all Project
+     */
+    private static void listProject(String json) {
+        // TODO: 12.03.2018
+    }
+
+
+    /**
+     * search in database adn send client
+     */
+    private static void search(String json) {
+        // TODO: 12.03.2018
+    }
 
 
 }
