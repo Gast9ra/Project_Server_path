@@ -152,16 +152,31 @@ public class MonoThreadClientHandler implements Runnable {
     /**
      * send to client list all Project
      */
-    private static void listProject(String json) {
-        // TODO: 12.03.2018
+    private static void listProject(String json) throws SQLException {
+
+        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectLeader, " +
+                "Projecttext, " +
+                "ProjectUser " +
+                "FROM project ");
+
     }
 
 
     /**
      * search in database adn send client
      */
-    private static void search(String json) {
-        // TODO: 12.03.2018
+    private static void search(String json) throws SQLException {
+        String nameProject = "";
+        //put json parser
+
+
+        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectLeader, " +
+                "Projecttext, " +
+                "ProjectUser " +
+                "FROM project " +
+                "WHERE ProjectName=" + nameProject);
+
+
     }
 
 
