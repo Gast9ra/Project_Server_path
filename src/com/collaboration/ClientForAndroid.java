@@ -127,9 +127,10 @@ public class ClientForAndroid implements Runnable {
     /**
      * возвращение тоже самое из поиска только без начальных данных
      */
-    public String listProject(){
+    public ArrayList<AndroidProjects> listProject(){
         String jsonout = null;
-        return jsonout;
+        ArrayList<AndroidProjects> result=new ArrayList<>();
+        return result;
     }
 
     /**
