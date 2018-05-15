@@ -151,4 +151,10 @@ public class ClientForAndroid implements Runnable {
     public static void createProject(String name,String discript,int numPeople){
         // TODO: 12.03.2018
     }
+
+    public User searchUser(String name){
+
+        return null;
+    }
+
 }

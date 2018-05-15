@@ -31,6 +31,7 @@ class Database {
     void test() throws IOException, InterruptedException {
         Socket socket = new Socket("localhost", 15233);
         ClientForAndroid client= new ClientForAndroid(socket);
+
         Thread.sleep(20);
         System.out.println(client.isConnected());
         client.sendMessage("test");
