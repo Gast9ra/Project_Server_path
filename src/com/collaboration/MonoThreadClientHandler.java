@@ -1,5 +1,9 @@
 package com.collaboration;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -38,10 +42,12 @@ public class MonoThreadClientHandler implements Runnable {
                 String entry;
 
                 entry = inStream.readLine();
+                JSONParser pars = new JSONParser();
+                Object jsob = pars.parse(entry);
+                JSONObject js = (JSONObject) jsob;
 
-                System.out.println(entry);
 
-                switch (entry) {
+                switch ((String)js.get("command")) {
                     case "create":
                         System.out.println("Accept Create");
                         createProject(entry);   // put json request
@@ -89,6 +95,8 @@ public class MonoThreadClientHandler implements Runnable {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
     }
 
@@ -131,11 +139,14 @@ public class MonoThreadClientHandler implements Runnable {
      * need data id user id project
      * check data not work now
      */
-    private static void joinProject(String json) throws SQLException {
+    private static void joinProject(String json) throws SQLException, ParseException {
         int idUser = 0;
         int idProject = 0;
         String jsonOnSql = null;
-        //json parse here
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
+        idUser = (Integer) js.get("id");
 
 
         ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectQueue FROM project WHERE idProject=" + idProject);
@@ -165,9 +176,13 @@ public class MonoThreadClientHandler implements Runnable {
     /**
      * search in database adn send client
      */
-    private static void search(String json) throws SQLException {
+    private static void search(String json) throws SQLException, ParseException {
         String nameProject = "";
-        //put json parser
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
+        nameProject = (String) js.get("name");
+
 
 
         ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectLeader, " +

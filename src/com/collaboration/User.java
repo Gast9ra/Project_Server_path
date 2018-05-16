@@ -5,9 +5,11 @@ public class User {
     private String nameUser;
     private String leaderUser;
     private String userText;
-    private String userProj;
+    private String userProj; //jsonArray
 
+    public User() {
 
+    }
     public User(int id, String name,String text,String userLeader,String userConnect) {
         this.idUser=id;
         this.nameUser=name;

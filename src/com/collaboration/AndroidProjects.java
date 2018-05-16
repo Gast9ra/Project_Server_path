@@ -8,8 +8,10 @@ public class AndroidProjects {
     private int leaderProject;
     private ArrayList<Users> usersProject;
 
+    public AndroidProjects() {
+    }
 
-    public AndroidProjects(int id,String name,int leader,ArrayList<Users> listUsers){
+    public AndroidProjects(int id, String name, int leader, ArrayList<Users> listUsers){
             this.idProject=id;
             this.leaderProject=leader;
             this.nameProject=name;

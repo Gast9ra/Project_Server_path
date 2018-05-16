@@ -1,5 +1,11 @@
 package com.collaboration;
 
+
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -108,7 +114,10 @@ public class ClientForAndroid implements Runnable {
      */
 
     public void joinProject(int id){
-        //todo
+        JSONObject json  = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command", "joinProject");
+        json.put("id" , id);
     }
 
 
@@ -118,9 +127,9 @@ public class ClientForAndroid implements Runnable {
      * @param id
      * @return
      */
-    public String retProject(int id){
-
-        return "";
+    public AndroidProjects getProject(int id){
+            AndroidProjects result = new AndroidProjects();
+            return result;
     }
 
 
@@ -128,8 +137,9 @@ public class ClientForAndroid implements Runnable {
      * возвращение тоже самое из поиска только без начальных данных
      */
     public ArrayList<AndroidProjects> listProject(){
-        String jsonout = null;
+        JSONObject jsonout = null;
         ArrayList<AndroidProjects> result=new ArrayList<>();
+        jsonout.put("command", "listProject");
         return result;
     }
 
@@ -140,21 +150,34 @@ public class ClientForAndroid implements Runnable {
         int id=0;
         int idLeader=0;
         ArrayList<Users> listUsers=new ArrayList<>();
-
+        JSONObject json  = new JSONObject();
+        json.put("name", name);
+        json.put("command", "searchProjects");
         AndroidProjects result=new AndroidProjects(id,name,idLeader,listUsers);
-
         return result;
     }
 
 
 
-    public static void createProject(String name,String discript,int numPeople){
-        // TODO: 12.03.2018
+    public static void createProject( String name,String discript,int numPeople){
+        JSONObject json  = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command", "create");
+        JSONArray ar = new JSONArray();
+        JSONObject jsonAr  = new JSONObject();
+        jsonAr.put("name", name);
+        jsonAr.put("text", discript);
+        jsonAr.put("num", numPeople);
+        ar.add(jsonAr);
+        json.put("data", ar);
     }
 
     public User searchUser(String name){
-
-        return null;
+        JSONObject json  = new JSONObject();
+        json.put("name", name);
+        json.put("command", "searchUser");
+        User result = new User();
+        return result;
     }
 
 }

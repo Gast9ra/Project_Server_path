@@ -1,14 +1,15 @@
+1
 In database tablet:
-    project
-        Project User ||
-            {
-               "Users":[
-                    "idUser" //id значение int
-               ]
-            }
-        ||
+              project
+                  Project User ||
+                      {
+                         "Users":[
+                              "idUser" //id значение int
+                         ]
+                      }
+                  ||
 
-
+2
     User
         UserProjectConnect||
             {
@@ -17,10 +18,21 @@ In database tablet:
                 ]
             }
         ||
+3
+String json= "{\n" +
+"\"JsonMessaged\": \"command\"," +
+"\"Command\": \"create\"," +
+"\"data\":{" +
+"\"name\":\""+name+"\"," +
+"\"text\""+discript+"\"" +
+"}," +
+"}";
+}
 
+4
 Transfer Json:
     {
         "JsonMessaged": "type" //тип сообщения на будующие
         "Command": "com"  //какая команда
-        "data":[]
+        "data":[] //то что есть в таблице
     }
