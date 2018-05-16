@@ -1,5 +1,6 @@
 package com.collaboration;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -172,6 +173,11 @@ public class MonoThreadClientHandler implements Runnable {
             jsonOnSql = rs.getString(1);
         }
         //add in jsonOnSql user how want to join and check for repeat
+        jsob = pars.parse(jsonOnSql);
+        js = (JSONObject) jsob;
+        JSONArray ar = (JSONArray) js.get("ConnectProj");
+        ar.add(idUser);
+        js.replace("ConnectProj",ar);
 
 
         request = forSqlConnect.prepareStatement("UPDATE project set collaboration.project.ProjectUser=?" +
@@ -192,6 +198,9 @@ public class MonoThreadClientHandler implements Runnable {
                 "ProjectUser " +
                 "FROM project ");
         ResultSet rs = request.executeQuery();
+        while(rs.next()){
+
+        }
 
 
     }

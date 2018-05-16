@@ -22,7 +22,7 @@ public class ClientForAndroid implements Runnable {
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
     private Socket socket;
-    private String address;
+    private int idUser=1;
 
     public ClientForAndroid(Socket server) throws InterruptedException {
         this.socket = server;
