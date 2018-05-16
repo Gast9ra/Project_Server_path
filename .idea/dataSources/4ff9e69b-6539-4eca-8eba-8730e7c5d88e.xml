@@ -924,6 +924,7 @@
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="234" parent="231" name="ProjectName">
@@ -948,50 +949,61 @@
       <DataType>json|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="238" parent="231" name="PRIMARY">
+    <column id="238" parent="231" name="MaxPeople">
+      <Position>6</Position>
+      <DataType>int(11)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="239" parent="231" name="nowPeople">
+      <Position>7</Position>
+      <DataType>int(11)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="240" parent="231" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>idProject</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="239" parent="232" name="idUser">
+    <column id="241" parent="232" name="idUser">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="240" parent="232" name="UserName">
+    <column id="242" parent="232" name="UserName">
       <Position>2</Position>
       <DataType>varchar(25)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="241" parent="232" name="UserPass">
+    <column id="243" parent="232" name="UserPass">
       <Position>3</Position>
       <DataType>varchar(45)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="242" parent="232" name="UserProjectConnect">
+    <column id="244" parent="232" name="UserProjectConnect">
       <Position>4</Position>
       <DataType>json|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="243" parent="232" name="UserLeader">
+    <column id="245" parent="232" name="UserLeader">
       <Position>5</Position>
       <DataType>json|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="244" parent="232" name="UserText">
+    <column id="246" parent="232" name="UserText">
       <Position>6</Position>
-      <DataType>varchar(255)|0s</DataType>
+      <DataType>json|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="245" parent="232" name="Usercol">
+    <column id="247" parent="232" name="Usercol">
       <Position>7</Position>
       <DataType>varchar(45)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="246" parent="232" name="PRIMARY">
+    <key id="248" parent="232" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>idUser</ColNames>
       <Primary>1</Primary>

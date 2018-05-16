@@ -8,20 +8,18 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class MonoThreadClientHandler implements Runnable {
 
     private static Socket clientDialog;
-    private static Statement forSqlConnect;
+    private static Connection forSqlConnect;
 
 
     private static PrintWriter outStream;
     private static BufferedReader inStream;
 
-    public MonoThreadClientHandler(Socket client, Statement stmt) {
+    public MonoThreadClientHandler(Socket client, Connection stmt) {
         MonoThreadClientHandler.forSqlConnect = stmt;
         MonoThreadClientHandler.clientDialog = client;
     }
@@ -42,12 +40,13 @@ public class MonoThreadClientHandler implements Runnable {
                 String entry;
 
                 entry = inStream.readLine();
+                System.out.println(entry);
                 JSONParser pars = new JSONParser();
                 Object jsob = pars.parse(entry);
                 JSONObject js = (JSONObject) jsob;
 
 
-                switch ((String)js.get("command")) {
+                switch ((String) js.get("command")) {
                     case "create":
                         System.out.println("Accept Create");
                         createProject(entry);   // put json request
@@ -55,11 +54,17 @@ public class MonoThreadClientHandler implements Runnable {
                     case "join":
                         joinProject(entry);   // put json request
 
-                    case "need List project":
+                    case "ListProject":
                         listProject(entry); // put json request
 
-                    case "search":
-                        search(entry);
+                    case "searchProject":
+                        searchProject(entry);
+
+                    case "searchUser":
+                        searchUser(entry);
+
+                    case "getProjects":
+                        getProject(entry);
 
                 }
 
@@ -116,21 +121,30 @@ public class MonoThreadClientHandler implements Runnable {
     /**
      * check data and if true create project in sql
      */
-    public static void createProject(String json) throws SQLException {
+    public static void createProject(String json) throws SQLException, ParseException, InterruptedException {
         //data for the created project
-        String projectName = "";
-        String projectLeader = "";
+        String projectName;
+        String projectLeader = "1";
         String projectText = "";
         //put Json parser here
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
 
+        projectName = (String) js.get("name");
+        //projectLeader=(String) js.get("");
+        projectText = (String) js.get("text");
+        //sql request for
+        PreparedStatement request;
+        String sqlRequest = "INSERT INTO collaboration.project " +
+                "(ProjectName,ProjectLeader,Projecttext) VALUES (?,?,?)";
 
-        //sql request for create
-        String sqlRequest = "INSERT INTO project " +
-                "(ProjectName,ProjectLeader,Projecttext)" +
-                "value (" + projectName + projectLeader + projectText + ")";
-        forSqlConnect.executeUpdate(sqlRequest);
-
-
+        request = forSqlConnect.prepareStatement(sqlRequest);
+        request.setString(1, projectName);
+        request.setString(2, projectLeader);
+        request.setString(3, projectText);
+        request.execute();
+        Thread.sleep(20);
     }
 
 
@@ -148,27 +162,37 @@ public class MonoThreadClientHandler implements Runnable {
         JSONObject js = (JSONObject) jsob;
         idUser = (Integer) js.get("id");
 
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT ProjectUser FROM project WHERE idProject=?");
+        request.setInt(1, idUser);
 
-        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectQueue FROM project WHERE idProject=" + idProject);
+
+        ResultSet rs = request.executeQuery();
         while (rs.next()) {
             jsonOnSql = rs.getString(1);
         }
         //add in jsonOnSql user how want to join and check for repeat
 
 
-        forSqlConnect.executeUpdate("UPDATE project set ProjectQueue="
-                + jsonOnSql + "WHERE idProject=" + idProject);
+        request = forSqlConnect.prepareStatement("UPDATE project set collaboration.project.ProjectUser=?" +
+                " WHERE idProject=?");
+        request.setString(1, jsonOnSql);
+        request.setInt(2, idUser);
+        request.executeUpdate();
     }
+
 
     /**
      * send to client list all Project
      */
     private static void listProject(String json) throws SQLException {
-
-        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectLeader, " +
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT ProjectLeader, " +
                 "Projecttext, " +
                 "ProjectUser " +
                 "FROM project ");
+        ResultSet rs = request.executeQuery();
+
 
     }
 
@@ -176,23 +200,79 @@ public class MonoThreadClientHandler implements Runnable {
     /**
      * search in database adn send client
      */
-    private static void search(String json) throws SQLException, ParseException {
+    private static void searchProject(String json) throws SQLException, ParseException {
         String nameProject = "";
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(json);
         JSONObject js = (JSONObject) jsob;
         nameProject = (String) js.get("name");
 
-
-
-        ResultSet rs = forSqlConnect.executeQuery("SELECT ProjectLeader, " +
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT ProjectLeader, " +
                 "Projecttext, " +
-                "ProjectUser " +
+                "ProjectUser, idProject " +
                 "FROM project " +
-                "WHERE ProjectName=" + nameProject);
-
+                "WHERE ProjectName=?;");
+        request.setString(1, nameProject);
+        ResultSet rs = request.executeQuery();
+        JSONObject jsonOut = new JSONObject();
+        while (rs.next()) {
+            jsonOut.put("leader", rs.getString(1));
+            jsonOut.put("text", rs.getString(2));
+            jsonOut.put("user", rs.getString(3));
+            jsonOut.put("id", rs.getInt(4));
+        }
+        outStream.println(jsonOut.toString());
+        outStream.flush();
 
     }
 
+    private static void searchUser(String json) throws ParseException, SQLException {
+        String nameUser = "";
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
 
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT UserProjectConnect, UserLeader, UserText, idUser " +
+                "FROM user WHERE UserName=?;");
+        request.setString(1, nameUser);
+        ResultSet rs = request.executeQuery();
+        JSONObject jsonOut = new JSONObject();
+        while (rs.next()) {
+            jsonOut.put("connect", rs.getString(1));
+            jsonOut.put("leader", rs.getString(2));
+            jsonOut.put("text", rs.getString(3));
+            jsonOut.put("id", rs.getInt(4));
+        }
+        outStream.println(jsonOut.toString());
+        outStream.flush();
+    }
+
+    private static void getProject(String json) throws SQLException, ParseException {
+        String nameProject = "";
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
+        nameProject = (String) js.get("name");
+
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT ProjectLeader, " +
+                "Projecttext, " +
+                "ProjectUser, ProjectName " +
+                "FROM project " +
+                "WHERE idProject=?;");
+        request.setString(1, nameProject);
+        ResultSet rs = request.executeQuery();
+        JSONObject jsonOut = new JSONObject();
+        while (rs.next()) {
+            jsonOut.put("leader", rs.getString(1));
+            jsonOut.put("text", rs.getString(2));
+            jsonOut.put("user", rs.getString(3));
+            jsonOut.put("name", rs.getString(4));
+        }
+        outStream.println(jsonOut.toString());
+        outStream.flush();
+
+    }
 }

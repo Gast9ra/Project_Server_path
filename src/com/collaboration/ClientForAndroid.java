@@ -25,7 +25,7 @@ public class ClientForAndroid implements Runnable {
     private String address;
 
     public ClientForAndroid(Socket server) throws InterruptedException {
-        this.socket=server;
+        this.socket = server;
         Thread thread = new Thread(this, "Net");
         System.out.println("check" + thread);
         thread.start();
@@ -75,9 +75,9 @@ public class ClientForAndroid implements Runnable {
                     }
 
                     mServerMessage = mBufferIn.readLine();
-                    if(mServerMessage.equalsIgnoreCase("quit")){
-                       sendMessage("quit");
-                       socket.close();
+                    if (mServerMessage.equalsIgnoreCase("quit")) {
+                        sendMessage("quit");
+                        socket.close();
                     }
 
                 }
@@ -105,79 +105,116 @@ public class ClientForAndroid implements Runnable {
     }
 
 
-
     //в приложение
 
     /**
      * получение номера проекта на запрос на присоединении
+     *
      * @param id
      */
 
-    public void joinProject(int id){
-        JSONObject json  = new JSONObject();
+    public void joinProject(int id) {
+        JSONObject json = new JSONObject();
         json.put("JsonMessaged", "command");
         json.put("command", "joinProject");
-        json.put("id" , id);
+        json.put("id", id);
     }
 
 
     /**
      * получение определеного проекта по id
      * возращиние конструктора проекта
+     *
      * @param id
      * @return
      */
-    public AndroidProjects getProject(int id){
-            AndroidProjects result = new AndroidProjects();
-            return result;
+    public AndroidProjects getProject(int id) throws InterruptedException, ParseException {
+        ArrayList<Users> listUsers = new ArrayList<>();
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("command", "getProjects");
+        sendMessage(json.toString());
+        Thread.sleep(200);
+
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(getmServerMessage());
+        JSONObject js = (JSONObject) jsob;
+        js.get("user"); // поместить json массив в listUser
+
+        AndroidProjects result = new AndroidProjects(id, (String) js.get("name"), (Integer) js.get("leader"), listUsers);
+        return result;
     }
 
 
     /**
      * возвращение тоже самое из поиска только без начальных данных
      */
-    public ArrayList<AndroidProjects> listProject(){
+    public ArrayList<AndroidProjects> listProject() {
         JSONObject jsonout = null;
-        ArrayList<AndroidProjects> result=new ArrayList<>();
+        ArrayList<AndroidProjects> result = new ArrayList<>();
         jsonout.put("command", "listProject");
         return result;
     }
 
     /**
-        возвращение листа кострукторов проэктов
+     * возвращение листа кострукторов проэктов
      */
-    public AndroidProjects searchProject(String name){
-        int id=0;
-        int idLeader=0;
-        ArrayList<Users> listUsers=new ArrayList<>();
-        JSONObject json  = new JSONObject();
+    public AndroidProjects searchProject(String name) throws InterruptedException, ParseException {
+        int id = 0;
+        int idLeader = 0;
+        ArrayList<Users> listUsers = new ArrayList<>();
+        JSONObject json = new JSONObject();
         json.put("name", name);
         json.put("command", "searchProjects");
-        AndroidProjects result=new AndroidProjects(id,name,idLeader,listUsers);
+        sendMessage(json.toString());
+        Thread.sleep(200);
+
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(getmServerMessage());
+        JSONObject js = (JSONObject) jsob;
+        js.get("user"); // поместить json массив в listUser
+
+        AndroidProjects result = new AndroidProjects((Integer) js.get("id"), name, (Integer) js.get("leader"), listUsers);
+        return result;
+    }
+
+    public User searchUser(String name) throws InterruptedException, ParseException {
+        int id = 0;
+        int idLeader = 0;
+        ArrayList<Users> listUsers = new ArrayList<>();
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("command", "searchUser");
+        sendMessage(json.toString());
+        Thread.sleep(200);
+
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(getmServerMessage());
+        JSONObject js = (JSONObject) jsob;
+
+
+        User result = new User((Integer) js.get("id")
+                , name
+                , (String) js.get("leader")
+                , (String) js.get("text")
+                , (String) js.get("connect"));
         return result;
     }
 
 
-
-    public static void createProject( String name,String discript,int numPeople){
-        JSONObject json  = new JSONObject();
+    public void createProject(String name, String discript, int numPeople) throws InterruptedException {
+        JSONObject json = new JSONObject();
         json.put("JsonMessaged", "command");
         json.put("command", "create");
         JSONArray ar = new JSONArray();
-        JSONObject jsonAr  = new JSONObject();
-        jsonAr.put("name", name);
-        jsonAr.put("text", discript);
-        jsonAr.put("num", numPeople);
-        ar.add(jsonAr);
-        json.put("data", ar);
+        JSONObject jsonAr = new JSONObject();
+        json.put("name", name);
+        json.put("text", discript);
+        json.put("num", numPeople);
+        //ar.add(jsonAr);
+        //json.put("data", ar);
+        sendMessage(json.toString());
     }
 
-    public User searchUser(String name){
-        JSONObject json  = new JSONObject();
-        json.put("name", name);
-        json.put("command", "searchUser");
-        User result = new User();
-        return result;
-    }
 
 }
