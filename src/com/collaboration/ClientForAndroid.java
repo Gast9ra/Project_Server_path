@@ -153,6 +153,8 @@ public class ClientForAndroid implements Runnable {
         JSONObject jsonout = null;
         ArrayList<AndroidProjects> result = new ArrayList<>();
         jsonout.put("command", "listProject");
+
+
         return result;
     }
 
@@ -162,7 +164,6 @@ public class ClientForAndroid implements Runnable {
     public AndroidProjects searchProject(String name) throws InterruptedException, ParseException {
         int id = 0;
         int idLeader = 0;
-        ArrayList<Users> listUsers = new ArrayList<>();
         JSONObject json = new JSONObject();
         json.put("name", name);
         json.put("command", "searchProjects");
@@ -172,11 +173,35 @@ public class ClientForAndroid implements Runnable {
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(getmServerMessage());
         JSONObject js = (JSONObject) jsob;
-        js.get("user"); // поместить json массив в listUser
+         // поместить json массив в listUser
+        JSONArray userArray= (JSONArray) js.get("user");
+        ArrayList<Users> usersProject= new ArrayList<>();
+        for(int i=0;i<userArray.size();i++){
+            jsob = pars.parse(userArray.get(i).toString());
+            js = (JSONObject) jsob;
+            usersProject.add(new Users((Integer) js.get("idUser"),getNameUser((Integer) js.get("idUser"))));
+        }
 
-        AndroidProjects result = new AndroidProjects((Integer) js.get("id"), name, (Integer) js.get("leader"), listUsers);
+        AndroidProjects result = new AndroidProjects((Integer) js.get("id"), name, (Integer) js.get("leader"), usersProject);
         return result;
     }
+
+    public  String getNameUser(int id) throws InterruptedException, ParseException {
+        String user="";
+
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("command", "getName");
+        sendMessage(json.toString());
+        Thread.sleep(200);
+
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(getmServerMessage());
+        JSONObject js = (JSONObject) jsob;
+
+        return (String) js.get("user");
+    }
+
 
     public User searchUser(String name) throws InterruptedException, ParseException {
         int id = 0;

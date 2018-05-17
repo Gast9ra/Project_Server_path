@@ -67,6 +67,8 @@ public class MonoThreadClientHandler implements Runnable {
                     case "getProjects":
                         getProject(entry);
 
+                    case "getName":
+                        getName(entry);
                 }
 
                 if (entry.equalsIgnoreCase("quit")) {
@@ -210,7 +212,7 @@ public class MonoThreadClientHandler implements Runnable {
      * search in database adn send client
      */
     private static void searchProject(String json) throws SQLException, ParseException {
-        String nameProject = "";
+        String nameProject ;
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(json);
         JSONObject js = (JSONObject) jsob;
@@ -259,11 +261,10 @@ public class MonoThreadClientHandler implements Runnable {
     }
 
     private static void getProject(String json) throws SQLException, ParseException {
-        String nameProject = "";
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(json);
         JSONObject js = (JSONObject) jsob;
-        nameProject = (String) js.get("name");
+        int nameProject = (int) js.get("id");
 
         PreparedStatement request;
         request = forSqlConnect.prepareStatement("SELECT ProjectLeader, " +
@@ -271,7 +272,7 @@ public class MonoThreadClientHandler implements Runnable {
                 "ProjectUser, ProjectName " +
                 "FROM project " +
                 "WHERE idProject=?;");
-        request.setString(1, nameProject);
+        request.setInt(1, nameProject);
         ResultSet rs = request.executeQuery();
         JSONObject jsonOut = new JSONObject();
         while (rs.next()) {
@@ -283,5 +284,31 @@ public class MonoThreadClientHandler implements Runnable {
         outStream.println(jsonOut.toString());
         outStream.flush();
 
+    }
+
+
+    private  void getName(String json) throws SQLException, InterruptedException, ParseException {
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
+        int id = (int) js.get("id");
+
+        String user = null;
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT UserName " +
+                "FROM user " +
+                "WHERE idUser=?;");
+        request.setInt(1, id);
+        ResultSet rs = request.executeQuery();
+
+        while(rs.next()){
+            user=rs.getString(1);
+        }
+        JSONObject jsonOut = new JSONObject();
+        jsonOut.put("user", user);
+        jsonOut.put("command", "getName");
+
+        outStream.println(json.toString());
+        outStream.flush();
     }
 }
