@@ -35,11 +35,12 @@ class Database {
 
         Thread.sleep(20);
         System.out.println(client.isConnected());
+        client.login("Mahib","123");
         //client.sendMessage("test");
 //        client.sendMessage("Client test");
 //        System.out.println(client.getmServerMessage());
-        //client.createProject("qter", "f", 1);
-        client.registration("Mahib","123","terrorist");
+        client.createProject("qtddder", "f", 1);
+        //client.registration("Mahib","123","terrorist");
 
     }
 

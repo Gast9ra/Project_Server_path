@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 public class MultiThreadServer {
 
 	private static ExecutorService executeIt = Executors.newFixedThreadPool(2);
-	private static final String url = "jdbc:mysql://192.168.0.37:3306/collaboration"+
+	private static final String url = "jdbc:mysql://159.65.119.198:3306/Collaboration"+
 			"?verifyServerCertificate=false"+
 			"&useSSL=false"+
 			"&requireSSL=false"+
@@ -21,8 +21,8 @@ public class MultiThreadServer {
 			"&serverTimezone=UTC";
 	//private static final String url = "jdbc:mysql://10.210.10.138:3306?autoReconnect=true&useSSL=false";
 
-	private static final String user = "root";
-	private static final String password = "root";
+	private static final String user = "user";
+	private static final String password = "collabmysql";
 
 
 	/**

@@ -36,7 +36,28 @@ public class MonoThreadClientHandler implements Runnable {
             outStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(clientDialog.getOutputStream()))
                     , true);
 
-//            if (!authentication(inStream.readLine())) clientDialog.close(); //check data need json
+
+            while(!clientDialog.isClosed()){
+                String entry;
+
+                entry = inStream.readLine();
+                System.out.println(entry);
+                JSONParser pars = new JSONParser();
+                Object jsob = pars.parse(entry);
+                JSONObject js = (JSONObject) jsob;
+
+                switch ((String) js.get("command")){
+
+                    case "registration":
+                        if(registration(entry)) break;
+
+                    case "authentication":
+                        if(authentication(entry)) break;
+                }
+
+
+            }
+
 
             while (!clientDialog.isClosed()) {
                 String entry;
@@ -71,8 +92,7 @@ public class MonoThreadClientHandler implements Runnable {
                     case "getName":
                         getName(entry);
 
-                    case "registration":
-                        registration(entry);
+
                 }
 
                 if (entry.equalsIgnoreCase("quit")) {
@@ -117,19 +137,27 @@ public class MonoThreadClientHandler implements Runnable {
      * takes json and send to sql. if user haven't in database send
      * request to user need register or not
      */
-    private static boolean authentication(String login) {
-        outStream.println("true");
-        outStream.flush();
-        // TODO: 12.03.2018
+    private static boolean authentication(String login) throws ParseException, SQLException {
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(login);
+        JSONObject js = (JSONObject) jsob;
+        String name= (String) js.get("login");
+        String pass= (String) js.get("pass");
+
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("SELECT idProject FROM Collaboration.user " +
+                "WHERE UserName=? and UserPass=? ;");
+
+
         return true;
     }
 
-    private static void registration(String json) throws ParseException, SQLException, InterruptedException {
+    private static boolean registration(String json) throws ParseException, SQLException, InterruptedException {
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(json);
         JSONObject js = (JSONObject) jsob;
         PreparedStatement request;
-        request = forSqlConnect.prepareStatement("INSERT INTO collaboration.user " +
+        request = forSqlConnect.prepareStatement("INSERT INTO Collaboration.user " +
                 "(UserName,UserPass) " +
                 "VALUES (?,?)");
         String name=(String) js.get("name");
@@ -141,6 +169,7 @@ public class MonoThreadClientHandler implements Runnable {
         //request.setString(3, text);
         request.executeUpdate();
         Thread.sleep(20);
+        return true;
     }
 
 
@@ -162,7 +191,7 @@ public class MonoThreadClientHandler implements Runnable {
         projectText = (String) js.get("text");
         //sql request for
         PreparedStatement request;
-        String sqlRequest = "INSERT INTO collaboration.project " +
+        String sqlRequest = "INSERT INTO project " +
                 "(ProjectName,ProjectLeader,Projecttext) VALUES (?,?,?)";
 
         request = forSqlConnect.prepareStatement(sqlRequest);
@@ -205,7 +234,7 @@ public class MonoThreadClientHandler implements Runnable {
         js.replace("ConnectProj",ar);
 
 
-        request = forSqlConnect.prepareStatement("UPDATE project set collaboration.project.ProjectUser=?" +
+        request = forSqlConnect.prepareStatement("UPDATE project set Collaboration.project.ProjectUser=?" +
                 " WHERE idProject=?");
         request.setString(1, jsonOnSql);
         request.setInt(2, idUser);

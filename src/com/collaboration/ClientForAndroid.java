@@ -107,7 +107,14 @@ public class ClientForAndroid implements Runnable {
 
     //в приложение
 
-    public boolean login(){
+    public boolean login(String login,String pass) throws InterruptedException {
+        JSONObject json = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command","authentication");
+        json.put("login",login);
+        json.put("pass",pass);
+        sendMessage(json.toString());
+
         return false;
     }
 
