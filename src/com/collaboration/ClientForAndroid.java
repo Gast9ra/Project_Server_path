@@ -107,17 +107,34 @@ public class ClientForAndroid implements Runnable {
 
     //в приложение
 
+    public boolean login(){
+        return false;
+    }
+
+
+
+    public void registration(String name,String pass ,String text) throws InterruptedException {
+        JSONObject json = new JSONObject();
+        json.put("JsonMessaged", "command");
+        json.put("command","registration");
+        json.put("name",name);
+        json.put("pass",pass);
+        json.put("text",text);
+        sendMessage(json.toString());
+    }
+
     /**
      * получение номера проекта на запрос на присоединении
      *
      * @param id
      */
 
-    public void joinProject(int id) {
+    public void joinProject(int id) throws InterruptedException {
         JSONObject json = new JSONObject();
         json.put("JsonMessaged", "command");
         json.put("command", "joinProject");
         json.put("id", id);
+        sendMessage(json.toString());
     }
 
 

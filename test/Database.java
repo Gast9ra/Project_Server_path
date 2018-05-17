@@ -38,8 +38,8 @@ class Database {
         //client.sendMessage("test");
 //        client.sendMessage("Client test");
 //        System.out.println(client.getmServerMessage());
-        client.createProject("qter", "f", 1);
-
+        //client.createProject("qter", "f", 1);
+        client.registration("Mahib","123","terrorist");
 
     }
 

@@ -70,6 +70,9 @@ public class MonoThreadClientHandler implements Runnable {
 
                     case "getName":
                         getName(entry);
+
+                    case "registration":
+                        registration(entry);
                 }
 
                 if (entry.equalsIgnoreCase("quit")) {
@@ -121,6 +124,25 @@ public class MonoThreadClientHandler implements Runnable {
         return true;
     }
 
+    private static void registration(String json) throws ParseException, SQLException, InterruptedException {
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(json);
+        JSONObject js = (JSONObject) jsob;
+        PreparedStatement request;
+        request = forSqlConnect.prepareStatement("INSERT INTO collaboration.user " +
+                "(UserName,UserPass) " +
+                "VALUES (?,?)");
+        String name=(String) js.get("name");
+        String pass=(String) js.get("pass");
+        String text=(String) js.get("text");
+        System.out.println(name+"-   "+pass);
+        request.setString(1, name);
+        request.setString(2, pass);
+        //request.setString(3, text);
+        request.executeUpdate();
+        Thread.sleep(20);
+    }
+
 
     /**
      * check data and if true create project in sql
@@ -129,7 +151,7 @@ public class MonoThreadClientHandler implements Runnable {
         //data for the created project
         String projectName;
         String projectLeader = "1";
-        String projectText = "";
+        String projectText;
         //put Json parser here
         JSONParser pars = new JSONParser();
         Object jsob = pars.parse(json);
