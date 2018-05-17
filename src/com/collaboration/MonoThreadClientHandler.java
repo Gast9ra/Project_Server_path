@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class MonoThreadClientHandler implements Runnable {
 
@@ -195,16 +196,19 @@ public class MonoThreadClientHandler implements Runnable {
      */
     private static void listProject(String json) throws SQLException {
         PreparedStatement request;
-        request = forSqlConnect.prepareStatement("SELECT ProjectLeader, " +
-                "Projecttext, " +
-                "ProjectUser " +
+        request = forSqlConnect.prepareStatement("SELECT idProject "+
                 "FROM project ");
         ResultSet rs = request.executeQuery();
+        ArrayList<Integer> projectsID= new ArrayList<>();
+        JSONObject js = new JSONObject();
+        JSONArray ar = new JSONArray();
+
         while(rs.next()){
-
+            ar.add(rs.getInt(1));
         }
-
-
+        js.put("data",ar);
+        outStream.println(js.toString());
+        outStream.flush();
     }
 
 

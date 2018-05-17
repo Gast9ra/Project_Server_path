@@ -149,12 +149,19 @@ public class ClientForAndroid implements Runnable {
     /**
      * возвращение тоже самое из поиска только без начальных данных
      */
-    public ArrayList<AndroidProjects> listProject() {
+    public ArrayList<AndroidProjects> listProject() throws InterruptedException, ParseException {
         JSONObject jsonout = null;
         ArrayList<AndroidProjects> result = new ArrayList<>();
         jsonout.put("command", "listProject");
+        Thread.sleep(200);
 
-
+        JSONParser pars = new JSONParser();
+        Object jsob = pars.parse(getmServerMessage());
+        JSONObject js = (JSONObject) jsob;
+        JSONArray ar = (JSONArray) js.get("data");
+        for(int i=0;i<ar.size();i++){
+            result.add(getProject((Integer) ar.get(i)));
+        }
         return result;
     }
 
