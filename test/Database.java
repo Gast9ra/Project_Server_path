@@ -39,9 +39,9 @@ class Database {
         //client.sendMessage("test");
 //        client.sendMessage("Client test");
 //        System.out.println(client.getmServerMessage());
-        client.createProject("qtddder", "f", 1);
+      // client.createProject("qtddder", "f", 1);
         //client.registration("Mahib","123","terrorist");
-
+        client.stopClient();
     }
 
 }

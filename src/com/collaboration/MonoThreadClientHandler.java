@@ -37,27 +37,6 @@ public class MonoThreadClientHandler implements Runnable {
                     , true);
 
 
-            while(!clientDialog.isClosed()){
-                String entry;
-
-                entry = inStream.readLine();
-                System.out.println(entry);
-                JSONParser pars = new JSONParser();
-                Object jsob = pars.parse(entry);
-                JSONObject js = (JSONObject) jsob;
-
-                switch ((String) js.get("command")){
-
-                    case "registration":
-                        if(registration(entry)) break;
-
-                    case "authentication":
-                        if(authentication(entry)) break;
-                }
-
-
-            }
-
 
             while (!clientDialog.isClosed()) {
                 String entry;
@@ -73,25 +52,37 @@ public class MonoThreadClientHandler implements Runnable {
                     case "create":
                         System.out.println("Accept Create");
                         createProject(entry);   // put json request
+                        break;
 
                     case "join":
                         joinProject(entry);   // put json request
+                        break;
 
                     case "ListProject":
                         listProject(entry); // put json request
+                        break;
 
                     case "searchProject":
                         searchProject(entry);
+                        break;
 
                     case "searchUser":
                         searchUser(entry);
+                        break;
 
                     case "getProjects":
                         getProject(entry);
+                        break;
 
                     case "getName":
                         getName(entry);
+                        break;
 
+                    case "registration":
+                        if(registration(entry)) break;
+
+                    case "authentication":
+                        if(authentication(entry)) break;
 
                 }
 
@@ -129,6 +120,10 @@ public class MonoThreadClientHandler implements Runnable {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("Client lost connecting");
+        } catch (Exception e){
+            System.out.println("Client lost connecting");
         }
     }
 
